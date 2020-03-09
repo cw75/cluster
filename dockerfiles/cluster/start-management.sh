@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+IP=`ifconfig eth0 | grep 'inet addr:' | grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1 }'`
+
 # Copies AWS environment variables for accessing the user's AWS account into
 # the ~/.aws/config file.
 mkdir -p ~/.aws
@@ -49,4 +51,4 @@ git checkout -b brnch origin/$REPO_BRANCH
 cd $HYDRO_HOME/cluster
 export PYTHONPATH=$PYTHONPATH:$(pwd)
 python3.6 hydro/management/k8s_server.py &
-python3.6 hydro/management/management_server.py
+python3.6 hydro/management/management_server.py $IP
