@@ -178,12 +178,14 @@ def run():
         if (executor_depart_socket in socks and
                 socks[executor_depart_socket] == zmq.POLLIN):
             ip = executor_depart_socket.recv_string()
+            logging.info('get depart done msg from ip %s' % ip)
             departing_executors[ip] -= 1
 
             # We wait until all the threads at this executor have acknowledged
             # that they are ready to leave, and we then remove the VM from the
             # system.
             if departing_executors[ip] == 0:
+                logging.info('removing ip %s' % ip)
                 scaler.remove_vm('function', ip)
                 del departing_executors[ip]
 
@@ -249,10 +251,10 @@ def run():
 
             # Invoke the configured policy to check system load and respond
             # appropriately.
-            #policy.replica_policy(function_frequencies, function_runtimes,
-            #                      dag_runtimes, executor_statuses,
-            #                      arrival_times)
-            #policy.executor_policy(executor_statuses, departing_executors)
+            policy.replica_policy(function_frequencies, function_runtimes,
+                                  dag_runtimes, executor_statuses,
+                                  arrival_times)
+            policy.executor_policy(executor_statuses, departing_executors)
 
             # Clears all metadata that was passed in for this epoch.
             function_runtimes.clear()
