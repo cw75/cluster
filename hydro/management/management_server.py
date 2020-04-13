@@ -118,7 +118,7 @@ def run():
             if args[0] == 'add':
                 scaler.add_vms(args[2], args[1])
             elif args[0] == 'remove':
-                scaler.remove_vm(args[2], args[1])
+                scaler.remove_vms(args[2], args[1])
 
         if (restart_pull_socket in socks and socks[restart_pull_socket] ==
                 zmq.POLLIN):
@@ -186,7 +186,7 @@ def run():
             # system.
             if departing_executors[ip] == 0:
                 logging.info('removing ip %s' % ip)
-                scaler.remove_vm('function', ip)
+                scaler.remove_vms('function', ip)
                 del departing_executors[ip]
 
         if (statistics_socket in socks and
