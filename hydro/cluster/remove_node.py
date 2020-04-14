@@ -18,6 +18,7 @@ import os
 
 import boto3
 import kubernetes as k8s
+from time import sleep
 
 from hydro.shared import util
 
@@ -30,10 +31,13 @@ def remove_node(ip, ntype):
     pod = util.get_pod_from_ip(client, ip)
     hostname = 'ip-%s.ec2.internal' % (ip.replace('.', '-'))
 
+    prev_count = util.get_previous_count(client, ntype)
+
     podname = pod.metadata.name
     client.delete_namespaced_pod(name=podname, namespace=util.NAMESPACE,
                                  body=k8s.client.V1DeleteOptions())
     client.delete_node(name=hostname, body=k8s.client.V1DeleteOptions())
 
-    prev_count = util.get_previous_count(client, ntype)
+    #prev_count = util.get_previous_count(client, ntype)
+    sleep(5)
     util.run_process(['./modify_ig.sh', ntype, str(prev_count - 1)])
