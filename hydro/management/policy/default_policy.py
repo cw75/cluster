@@ -151,7 +151,7 @@ class DefaultHydroPolicy(BaseHydroPolicy):
         avg_pinned_count = pinned_function_count / len(executor_statuses)
         num_nodes = len(executor_statuses) / NUM_EXEC_THREADS
 
-        logging.info(('There are currently %d executor nodes active in the' +
+        logging.info(('There are currently %d executor nodes active in the ' +
                      'system (%d threads).') % (num_nodes,
                                                 len(executor_statuses)))
         logging.info('Average executor utilization: %.4f' % (avg_utilization))
