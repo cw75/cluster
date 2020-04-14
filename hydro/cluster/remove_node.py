@@ -41,5 +41,5 @@ def remove_node(ip, ntype):
     # client.delete_node(name=hostname, body=k8s.client.V1DeleteOptions())
 
     #prev_count = util.get_previous_count(client, ntype)
-    #sleep(5)
+    sleep(10)
     util.run_process(['./modify_ig.sh', ntype, str(prev_count - 1)])
