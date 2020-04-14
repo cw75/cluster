@@ -30,7 +30,7 @@ EXECUTOR_REPORT_PERIOD = 5
 class DefaultHydroPolicy(BaseHydroPolicy):
     def __init__(self, scaler, max_utilization=.60, min_utilization=.10,
                  max_pin_count=.8, max_latency_deviation=1.25,
-                 scale_increase=4, grace_period=60):
+                 scale_increase=4, grace_period=120):
         self.grace_start = 0
 
         self.scaler = scaler
@@ -40,7 +40,7 @@ class DefaultHydroPolicy(BaseHydroPolicy):
         self.max_pin_count = max_pin_count
         self.max_latency_deviation = max_latency_deviation
         self.scale_increase = scale_increase
-        self.grace_period = 120
+        self.grace_period = grace_period
 
         self.latency_history = {}
         self.function_locations = {}

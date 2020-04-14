@@ -154,7 +154,7 @@ def run():
             # utilization to be skewed downwards. The reason we might still
             # receive this message is because the depart message may not have
             # arrived when this was sent.
-            if key in departing_executors:
+            if key[0] in departing_executors:
                 continue
 
             executor_statuses[key] = status
