@@ -33,11 +33,13 @@ def remove_node(ip, ntype):
 
     prev_count = util.get_previous_count(client, ntype)
 
-    podname = pod.metadata.name
-    client.delete_namespaced_pod(name=podname, namespace=util.NAMESPACE,
-                                 body=k8s.client.V1DeleteOptions())
-    client.delete_node(name=hostname, body=k8s.client.V1DeleteOptions())
+    util.run_process(['./delete_node.sh', hostname])
+
+    # podname = pod.metadata.name
+    # client.delete_namespaced_pod(name=podname, namespace=util.NAMESPACE,
+    #                              body=k8s.client.V1DeleteOptions())
+    # client.delete_node(name=hostname, body=k8s.client.V1DeleteOptions())
 
     #prev_count = util.get_previous_count(client, ntype)
-    sleep(5)
+    #sleep(5)
     util.run_process(['./modify_ig.sh', ntype, str(prev_count - 1)])
