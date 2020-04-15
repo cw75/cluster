@@ -25,6 +25,7 @@ spec:
   minSize: NUM_DUMMY
   rootVolumeSize: 32
   role: Node
+  instanceProtection: true
   nodeLabels:
     role: function
   subnets:

@@ -29,4 +29,4 @@ sed -i "s|NUM_DUMMY|$2|g" tmp.yml
 kops replace -f tmp.yml --force > /dev/null 2>&1
 rm tmp.yml
 
-#kops update cluster --name ${HYDRO_CLUSTER_NAME} --yes > /dev/null 2>&1
+kops update cluster --name ${HYDRO_CLUSTER_NAME} --yes > /dev/null 2>&1
