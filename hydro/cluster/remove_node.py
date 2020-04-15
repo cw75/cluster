@@ -33,7 +33,7 @@ def remove_node(ip, ntype):
 
     prev_count = util.get_previous_count(client, ntype)
 
-    util.run_process(['./delete_node.sh', hostname])
+    util.run_process(['./delete_node.sh', hostname, ntype, str(prev_count - 1)])
 
     # podname = pod.metadata.name
     # client.delete_namespaced_pod(name=podname, namespace=util.NAMESPACE,
@@ -42,4 +42,4 @@ def remove_node(ip, ntype):
 
     #prev_count = util.get_previous_count(client, ntype)
     #sleep(10)
-    util.run_process(['./modify_ig.sh', ntype, str(prev_count - 1)])
+    #util.run_process(['./modify_ig.sh', ntype, str(prev_count - 1)])
