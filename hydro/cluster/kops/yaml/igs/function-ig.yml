@@ -30,3 +30,5 @@ spec:
     role: function
   subnets:
     - us-east-1a
+  suspendProcesses:
+  - Terminate
