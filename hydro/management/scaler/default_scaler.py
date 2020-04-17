@@ -51,8 +51,7 @@ class DefaultScaler(BaseScaler):
 
             serialized = pin_msg.SerializeToString()
 
-            msg = '127.0.0.1:' + fname
-            send_message(self.context, msg,
+            send_message(self.context, serialized,
                          get_executor_pin_address(ip, tid))
 
             function_locations[fname].add((ip, tid))
