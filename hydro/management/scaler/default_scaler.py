@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import logging
 import random
 
 from hydro.management.util import (
@@ -23,10 +24,12 @@ from hydro.management.scaler.base_scaler import BaseScaler
 
 
 class DefaultScaler(BaseScaler):
-    def __init__(self, ctx, add_socket, remove_socket):
+    def __init__(self, ip, ctx, add_socket, remove_socket, pin_accept_socket):
+        self.ip = ip
         self.context = ctx
         self.add_socket = add_socket
         self.remove_socket = remove_socket
+        self.pin_accept_socket = pin_accept_socket
 
     def replicate_function(self, fname, num_replicas, function_locations,
                            executors):
@@ -41,6 +44,13 @@ class DefaultScaler(BaseScaler):
                 continue
 
             ip, tid = random.sample(candiate_nodes, 1)[0]
+
+            pin_msg = PinFunction()
+            pin_msg.name = fname
+            pin_msg.response_address = self.ip
+
+            serialized = pin_msg.SerializeToString()
+
             msg = '127.0.0.1:' + fname
             send_message(self.context, msg,
                          get_executor_pin_address(ip, tid))
