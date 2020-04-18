@@ -26,7 +26,8 @@ from hydro.shared.proto.cloudburst_pb2 import GenericResponse
 
 
 class DefaultScaler(BaseScaler):
-    def __init__(self, ctx, add_socket, remove_socket, pin_accept_socket):
+    def __init__(self, ip, ctx, add_socket, remove_socket, pin_accept_socket):
+        self.ip = ip
         self.context = ctx
         self.add_socket = add_socket
         self.remove_socket = remove_socket
@@ -48,7 +49,7 @@ class DefaultScaler(BaseScaler):
 
             msg = PinFunction()
             msg.name = fname
-            msg.response_address = '127.0.0.1'
+            msg.response_address = self.ip
 
             send_message(self.context, 'test',
                          get_executor_pin_address(ip, tid))
@@ -62,6 +63,8 @@ class DefaultScaler(BaseScaler):
                 continue
 
             if response.success:
+                logging.info('Pin operation to %s:%d for %s successful.' %
+                              (ip, tid, fname))
                 function_locations[fname].add((ip, tid))
             else:
                 # The pin operation was rejected, remove node and try again.

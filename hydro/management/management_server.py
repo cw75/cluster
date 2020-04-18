@@ -40,7 +40,7 @@ logging.basicConfig(filename='log_management.txt', level=logging.INFO,
                     format='%(asctime)s %(message)s')
 
 
-def run():
+def run(self_ip):
     context = zmq.Context(1)
 
     restart_pull_socket = context.socket(zmq.REP)
@@ -86,7 +86,7 @@ def run():
 
     client, _ = util.init_k8s()
 
-    scaler = DefaultScaler(context, add_push_socket, remove_push_socket, pin_accept_socket)
+    scaler = DefaultScaler(self_ip, context, add_push_socket, remove_push_socket, pin_accept_socket)
     policy = DefaultHydroPolicy(scaler)
 
     # Tracks the self-reported statuses of each executor thread in the system.
@@ -368,4 +368,4 @@ if __name__ == '__main__':
                                           '.kube/config')):
         pass
 
-    run()
+    run(sys.argv[1])
