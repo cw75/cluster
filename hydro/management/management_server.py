@@ -40,7 +40,7 @@ logging.basicConfig(filename='log_management.txt', level=logging.INFO,
                     format='%(asctime)s %(message)s')
 
 
-def run(self_ip):
+def run():
     context = zmq.Context(1)
 
     restart_pull_socket = context.socket(zmq.REP)
@@ -65,6 +65,7 @@ def run(self_ip):
     statistics_socket.bind('tcp://*:7006')
 
     pin_accept_socket = context.socket(zmq.PULL)
+    pin_accept_socket.setsockopt(zmq.RCVTIMEO, 1000)
     # this is a hack, should use PIN_ACCEPT_PORT instead but it is currently in cloudburst/
     pin_accept_socket.bind('tcp://*:5010')
 
@@ -85,7 +86,7 @@ def run(self_ip):
 
     client, _ = util.init_k8s()
 
-    scaler = DefaultScaler(self_ip, context, add_push_socket, remove_push_socket, pin_accept_socket)
+    scaler = DefaultScaler(context, add_push_socket, remove_push_socket, pin_accept_socket)
     policy = DefaultHydroPolicy(scaler)
 
     # Tracks the self-reported statuses of each executor thread in the system.
@@ -367,4 +368,4 @@ if __name__ == '__main__':
                                           '.kube/config')):
         pass
 
-    run(sys.argv[1])
+    run()

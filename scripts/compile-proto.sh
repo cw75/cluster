@@ -21,6 +21,11 @@ if [ -z "$(command -v protoc)" ]; then
   exit 1
 fi
 
+cd $HYDRO_HOME/cloudburst
+git pull origin master
+
+cd $HYDRO_HOME/cluster
+
 # Set up the shared Python package to put compile Protobuf definitions in.
 rm -rf $HYDRO_HOME/cluster/hydro/shared/proto
 mkdir $HYDRO_HOME/cluster/hydro/shared/proto
@@ -28,6 +33,7 @@ touch $HYDRO_HOME/cluster/hydro/shared/proto/__init__.py
 
 # Compile shared Protobufs.
 protoc -I=common/proto --python_out=$HYDRO_HOME/cluster/hydro/shared/proto shared.proto
+protoc -I=common/proto --python_out=$HYDRO_HOME/cluster/hydro/shared/proto cloudburst.proto
 
 # Compile the Protobufs to receive Anna metadata.
 cd $HYDRO_HOME/anna
