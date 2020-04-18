@@ -43,6 +43,8 @@ protoc -I=include/proto --python_out=$HYDRO_HOME/cluster/hydro/shared/proto meta
 cd $HYDRO_HOME/cloudburst
 protoc -I=proto --python_out=$HYDRO_HOME/cluster/hydro/shared/proto internal.proto
 
+cd $HYDRO_HOME/cluster
+
 # NOTE: This is a hack. We have to do this because the protobufs are not
 # packaged properly (in the protobuf definitions). This isn't an issue for C++
 # builds, because all the header files are in one place, but it breaks our
