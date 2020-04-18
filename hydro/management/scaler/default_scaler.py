@@ -52,7 +52,7 @@ class DefaultScaler(BaseScaler):
             msg.name = fname
             msg.response_address = self.ip
 
-            send_message(self.context, 'test',
+            send_message(self.context, msg.SerializeToString(),
                          get_executor_pin_address(ip, tid))
 
             response = GenericResponse()
