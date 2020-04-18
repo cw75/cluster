@@ -14,6 +14,7 @@
 
 import logging
 import random
+import zmq
 
 from hydro.management.util import (
     get_executor_pin_address,
