@@ -26,13 +26,30 @@ ec2_client = boto3.client('ec2', os.getenv('AWS_REGION', 'us-east-1'))
 
 def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
               prefix=None):
+    previously_created_pods_list = []
+    expected_counts = []
     for i in range(len(kinds)):
         print('Adding %d %s server node(s) to cluster...' %
               (counts[i], kinds[i]))
 
+        previously_created_pods = set()
+        pods = client.list_namespaced_pod(namespace=util.NAMESPACE,
+                                          label_selector='role=' +
+                                          kinds[i]).items
+
+        # Generate list of all recently created pods.
+        for pod in pods:
+            pname = pod.metadata.name
+            for container in pod.spec.containers:
+                cname = container.name
+                previously_created_pods.add((pname, cname))
+
+        previously_created_pods_list.append(previously_created_pods)
+
         prev_count = util.get_previous_count(client, kinds[i])
         util.run_process(['./modify_ig.sh', kinds[i], str(counts[i] +
                                                           prev_count)])
+        expected_counts.append(counts[i] + prev_count)
 
     util.run_process(['./validate_cluster.sh'])
 
@@ -51,14 +68,14 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
     route_addr = util.get_service_address(client, 'routing-service')
     function_addr = util.get_service_address(client, 'function-service')
 
-    # Create should only be true when the DaemonSet is being created for the
-    # first time -- i.e., when this is called from create_cluster. After that,
-    # we can basically ignore this because the DaemonSet will take care of
-    # adding pods to created nodes.
-    if create:
-        for i in range(len(kinds)):
-            kind = kinds[i]
+    for i in range(len(kinds)):
+        kind = kinds[i]
 
+        # Create should only be true when the DaemonSet is being created for the
+        # first time -- i.e., when this is called from create_cluster. After that,
+        # we can basically ignore this because the DaemonSet will take care of
+        # adding pods to created nodes.
+        if create:
             fname = 'yaml/ds/%s-ds.yml' % kind
             yml = util.load_yaml(fname, prefix)
 
@@ -76,33 +93,39 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
             apps_client.create_namespaced_daemon_set(namespace=util.NAMESPACE,
                                                      body=yml)
 
-            # Wait until all pods of this kind are running
-            res = []
-            while len(res) != counts[i]:
-                res = util.get_pod_ips(client, 'role='+kind, is_running=True)
+        # Wait until all pods of this kind are running
+        res = []
+        while len(res) != expected_counts[i]:
+            res = util.get_pod_ips(client, 'role='+kind, is_running=True)
 
-            created_pods = []
-            pods = client.list_namespaced_pod(namespace=util.NAMESPACE,
-                                              label_selector='role=' +
-                                              kind).items
+        created_pods = set()
+        pods = client.list_namespaced_pod(namespace=util.NAMESPACE,
+                                          label_selector='role=' +
+                                          kind).items
 
-            # Generate list of all recently created pods.
-            for pod in pods:
-                pname = pod.metadata.name
-                for container in pod.spec.containers:
-                    cname = container.name
-                    created_pods.append((pname, cname))
+        # Generate list of all recently created pods.
+        for pod in pods:
+            pname = pod.metadata.name
+            for container in pod.spec.containers:
+                cname = container.name
+                created_pods.add((pname, cname))
 
-            # Copy the KVS config into all recently created pods.
-            os.system('cp %s ./anna-config.yml' % cfile)
+        new_pods = created_pods.difference(previously_created_pods_list[i])
 
-            for pname, cname in created_pods:
+        # Copy the KVS config into all recently created pods.
+        os.system('cp %s ./anna-config.yml' % cfile)
+
+        print('copying conf file to pod')
+        for pname, cname in new_pods:
+            print(pname, cname)
+            if kind != 'function':
                 util.copy_file_to_pod(client, 'anna-config.yml', pname,
                                       '/hydro/anna/conf/', cname)
-                if kind == 'function':
+            else:
+                if cname == 'cache-container':
                     # For the cache pods, we also copy the conf into the cache
                     # conf directory.
                     util.copy_file_to_pod(client, 'anna-config.yml', pname,
                                           '/hydro/anna-cache/conf/', cname)
 
-            os.system('rm ./anna-config.yml')
+        os.system('rm ./anna-config.yml')
