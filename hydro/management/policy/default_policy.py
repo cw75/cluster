@@ -193,7 +193,7 @@ class DefaultHydroPolicy(BaseHydroPolicy):
         # We only decide to kill nodes if they are underutilized and if there
         # are at least 5 executors in the system -- we never scale down past
         # that.
-        if avg_utilization < self.min_utilization and num_nodes > 5:
+        '''if avg_utilization < self.min_utilization and num_nodes > 5:
             ip = random.choice(list(executor_statuses.values())).ip
             logging.info(('Average utilization is %.4f, and there are %d '
                           + 'executors. Removing IP %s.') %
@@ -209,4 +209,4 @@ class DefaultHydroPolicy(BaseHydroPolicy):
             departing_executors[ip] = NUM_EXEC_THREADS
 
             # start the grace period after removing nodes
-            self.grace_start = time.time()
+            self.grace_start = time.time()'''
