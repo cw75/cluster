@@ -20,6 +20,8 @@ import sys
 
 import zmq
 
+from anna.zmq_util import SocketCache
+
 from hydro.management.scaler.default_scaler import DefaultScaler
 from hydro.management.policy.default_policy import DefaultHydroPolicy
 from hydro.management.util import (
@@ -43,13 +45,15 @@ logging.basicConfig(filename='log_management.txt', level=logging.INFO,
 def run(self_ip):
     context = zmq.Context(1)
 
+    pusher_cache = SocketCache(context, zmq.PUSH)
+
     restart_pull_socket = context.socket(zmq.REP)
     restart_pull_socket.bind('tcp://*:7000')
 
     churn_pull_socket = context.socket(zmq.PULL)
     churn_pull_socket.bind('tcp://*:7001')
 
-    list_executors_socket = context.socket(zmq.REP)
+    list_executors_socket = context.socket(zmq.PULL)
     list_executors_socket.bind('tcp://*:7002')
 
     function_status_socket = context.socket(zmq.PULL)
@@ -140,13 +144,14 @@ def run(self_ip):
                 zmq.POLLIN):
             # We can safely ignore this message's contents, and the response
             # does not depend on it.
-            list_executors_socket.recv()
+            response_ip = list_executors_socket.recv_string()
 
             ips = StringSet()
             for ip in util.get_pod_ips(client, 'role=function'):
                 ips.keys.append(ip)
 
-            list_executors_socket.send(ips.SerializeToString())
+            sckt = pusher_cache.get(response_ip)
+            sckt.send(ips.SerializeToString())
 
         if (function_status_socket in socks and
                 socks[function_status_socket] == zmq.POLLIN):
