@@ -17,8 +17,8 @@ kops update cluster --name ${HYDRO_CLUSTER_NAME} --yes > /dev/null 2>&1
 
 # detach and terminate ec2 instance
 ID=$(aws ec2 --region us-east-1 describe-instances --filter Name=private-dns-name,Values=$1 --query 'Reservations[].Instances[].InstanceId' --output text)
-aws autoscaling --region us-east-1 detach-instances --instance-ids $ID --auto-scaling-group-name $2-instances.$HYDRO_CLUSTER_NAME --should-decrement-desired-capacity
-aws ec2 --region us-east-1 terminate-instances --instance-ids $ID
+aws autoscaling --region us-east-1 detach-instances --instance-ids $ID --auto-scaling-group-name $2-instances.$HYDRO_CLUSTER_NAME --should-decrement-desired-capacity > /dev/null 2>&1
+aws ec2 --region us-east-1 terminate-instances --instance-ids $ID > /dev/null 2>&1
 
 sed "s|CLUSTER_NAME|$HYDRO_CLUSTER_NAME|g" $YML_FILE > tmp.yml
 sed -i "s|MAX_DUMMY|$4|g" tmp.yml
