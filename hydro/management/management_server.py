@@ -262,9 +262,9 @@ def run(self_ip):
 
             # Invoke the configured policy to check system load and respond
             # appropriately.
-            #policy.replica_policy(function_frequencies, function_runtimes,
-            #                      dag_runtimes, executor_statuses,
-            #                      arrival_times)
+            policy.replica_policy(function_frequencies, function_runtimes,
+                                  dag_runtimes, executor_statuses,
+                                  arrival_times)
             #policy.executor_policy(executor_statuses, departing_executors)
 
             # Clears all metadata that was passed in for this epoch.
