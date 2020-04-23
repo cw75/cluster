@@ -265,7 +265,7 @@ def run(self_ip):
             policy.replica_policy(function_frequencies, function_runtimes,
                                   dag_runtimes, executor_statuses,
                                   arrival_times)
-            #policy.executor_policy(executor_statuses, departing_executors)
+            policy.executor_policy(executor_statuses, departing_executors)
 
             # Clears all metadata that was passed in for this epoch.
             function_runtimes.clear()
