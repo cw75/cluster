@@ -195,7 +195,7 @@ def run(self_ip):
             # that they are ready to leave, and we then remove the VM from the
             # system.
             if departing_executors[ip] == 0:
-                logging.info('removing node with ip %s' % ip)
+                logging.info('Removing node with ip %s' % ip)
                 scaler.remove_vms('function', ip)
                 del departing_executors[ip]
 
