@@ -37,7 +37,10 @@ fi
 
 git remote remove origin
 git remote add origin https://github.com/$REPO_ORG/cluster
-git fetch -p origin
+while ! (git fetch -p origin)
+do
+  echo "git fetch failed, retrying"
+done
 git checkout -b brnch origin/$REPO_BRANCH
 
 # Generate compiled Python protobuf libraries from other Hydro project
