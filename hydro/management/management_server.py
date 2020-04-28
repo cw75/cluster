@@ -38,6 +38,8 @@ from hydro.shared.proto.metadata_pb2 import ClusterMembership, MEMORY
 
 REPORT_PERIOD = 5
 
+PIN_ACCEPT_PORT = '5010'
+
 logging.basicConfig(filename='log_management.txt', level=logging.INFO,
                     format='%(asctime)s %(message)s')
 
@@ -70,8 +72,7 @@ def run(self_ip):
 
     pin_accept_socket = context.socket(zmq.PULL)
     pin_accept_socket.setsockopt(zmq.RCVTIMEO, 1000)
-    # this is a hack, should use PIN_ACCEPT_PORT instead but it is currently in cloudburst/
-    pin_accept_socket.bind('tcp://*:5010')
+    pin_accept_socket.bind('tcp://*:' + PIN_ACCEPT_PORT)
 
     poller = zmq.Poller()
     poller.register(restart_pull_socket, zmq.POLLIN)

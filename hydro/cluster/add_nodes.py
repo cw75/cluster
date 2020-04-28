@@ -23,6 +23,15 @@ from hydro.shared import util
 
 ec2_client = boto3.client('ec2', os.getenv('AWS_REGION', 'us-east-1'))
 
+# Generate list of all recently created pods.
+def get_current_pod_container_pairs(pods):
+    pod_container_pairs = set()
+    for pod in pods:
+        pname = pod.metadata.name
+        for container in pod.spec.containers:
+            cname = container.name
+            pod_container_pairs.add((pname, cname))
+    return pod_container_pairs
 
 def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
               prefix=None):
@@ -32,19 +41,11 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
         print('Adding %d %s server node(s) to cluster...' %
               (counts[i], kinds[i]))
 
-        previously_created_pods = set()
         pods = client.list_namespaced_pod(namespace=util.NAMESPACE,
                                           label_selector='role=' +
                                           kinds[i]).items
 
-        # Generate list of all recently created pods.
-        for pod in pods:
-            pname = pod.metadata.name
-            for container in pod.spec.containers:
-                cname = container.name
-                previously_created_pods.add((pname, cname))
-
-        previously_created_pods_list.append(previously_created_pods)
+        previously_created_pods_list.append(get_current_pod_container_pairs(pods))
 
         prev_count = util.get_previous_count(client, kinds[i])
         util.run_process(['./modify_ig.sh', kinds[i], str(counts[i] +
@@ -98,17 +99,11 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
         while len(res) != expected_counts[i]:
             res = util.get_pod_ips(client, 'role='+kind, is_running=True)
 
-        created_pods = set()
         pods = client.list_namespaced_pod(namespace=util.NAMESPACE,
                                           label_selector='role=' +
                                           kind).items
 
-        # Generate list of all recently created pods.
-        for pod in pods:
-            pname = pod.metadata.name
-            for container in pod.spec.containers:
-                cname = container.name
-                created_pods.add((pname, cname))
+        created_pods = get_current_pod_container_pairs(pods)
 
         new_pods = created_pods.difference(previously_created_pods_list[i])
 
@@ -128,26 +123,30 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
 
         os.system('rm ./anna-config.yml')
 
-def batch_add_nodes(client, apps_client, cfile, node_type, node_count, batch_size, prefix):
-  if node_count <= batch_size:
-    add_nodes(client, apps_client, cfile, [node_type], [node_count], True,
+def batch_add_nodes(client, apps_client, cfile, node_types, node_counts, batch_size, prefix):
+  if sum(node_counts) <= batch_size:
+    add_nodes(client, apps_client, cfile, node_types, node_counts, True,
               prefix)
   else:
-    batch_count = 1
-    print('Batch %d: adding %d nodes...' % (batch_count, batch_size))
-    add_nodes(client, apps_client, cfile, [node_type], [batch_size], True,
-              prefix)
-    remaining_count = node_count - batch_size
-    batch_count += 1
-    while remaining_count > 0:
-      if remaining_count <= batch_size:
-        print('Batch %d: adding %d nodes...' % (batch_count, remaining_count))
-        add_nodes(client, apps_client, cfile, [node_type], [remaining_count], False,
-                  prefix)
-        remaining_count = 0
-      else:
-        print('Batch %d: adding %d nodes...' % (batch_count, batch_size))
-        add_nodes(client, apps_client, cfile, [node_type], [batch_size], False,
-                  prefix)
-        remaining_count = remaining_count - batch_size
-      batch_count += 1
+    for i in range(len(node_types)):
+        if node_counts[i] <= batch_size:
+            batch_add_nodes(client, apps_client, cfile, [node_types[i]], [node_counts[i]], batch_size, prefix)
+        else:
+            batch_count = 1
+            print('Batch %d: adding %d nodes...' % (batch_count, batch_size))
+            add_nodes(client, apps_client, cfile, [node_types[i]], [batch_size], True,
+                      prefix)
+            remaining_count = node_counts[i] - batch_size
+            batch_count += 1
+            while remaining_count > 0:
+              if remaining_count <= batch_size:
+                print('Batch %d: adding %d nodes...' % (batch_count, remaining_count))
+                add_nodes(client, apps_client, cfile, [node_types[i]], [remaining_count], False,
+                          prefix)
+                remaining_count = 0
+              else:
+                print('Batch %d: adding %d nodes...' % (batch_count, batch_size))
+                add_nodes(client, apps_client, cfile, [node_types[i]], [batch_size], False,
+                          prefix)
+                remaining_count = remaining_count - batch_size
+              batch_count += 1

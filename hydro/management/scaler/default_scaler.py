@@ -39,12 +39,10 @@ class DefaultScaler(BaseScaler):
         if num_replicas < 0:
             return
 
-        failed_candidate = set()
+        existing_replicas = function_locations[fname]
+        candiate_nodes = executors.difference(existing_replicas)
 
         for _ in range(num_replicas):
-            existing_replicas = function_locations[fname]
-            candiate_nodes = executors.difference(existing_replicas).difference(failed_candidate)
-
             if len(candiate_nodes) == 0:
                 continue
 
@@ -63,7 +61,7 @@ class DefaultScaler(BaseScaler):
             except zmq.ZMQError:
                 logging.error('Pin operation to %s:%d timed out for %s.' %
                               (ip, tid, fname))
-                failed_candidate.add((ip, tid))
+                candiate_nodes.remove((ip, tid))
                 continue
 
             if response.success:
@@ -74,8 +72,7 @@ class DefaultScaler(BaseScaler):
                 # The pin operation was rejected, remove node and try again.
                 logging.error('Node %s:%d rejected pin for %s.'
                               % (ip, tid, fname))
-                failed_candidate.add((ip, tid))
-                continue
+            candiate_nodes.remove((ip, tid))
 
     def dereplicate_function(self, fname, num_replicas, function_locations):
         if num_replicas < 2:

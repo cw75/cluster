@@ -22,6 +22,8 @@ import boto3
 from hydro.cluster.add_nodes import batch_add_nodes
 from hydro.shared import util
 
+BATCH_SIZE = 100
+
 ec2_client = boto3.client('ec2', os.getenv('AWS_REGION', 'us-east-1'))
 
 def create_cluster(mem_count, ebs_count, func_count, sched_count, route_count,
@@ -84,16 +86,13 @@ def create_cluster(mem_count, ebs_count, func_count, sched_count, route_count,
                           mon_spec['spec']['containers'][0]['name'])
     os.system('rm anna-config.yml')
 
-    batch_size = 100
-
     print('Creating %d routing nodes...' % (route_count))
-    batch_add_nodes(client, apps_client, cfile, 'routing', route_count, batch_size, prefix)
+    batch_add_nodes(client, apps_client, cfile, ['routing'], [route_count], BATCH_SIZE, prefix)
     util.get_pod_ips(client, 'role=routing')
 
     print('Creating %d memory, %d ebs node(s)...' %
           (mem_count, ebs_count))
-    batch_add_nodes(client, apps_client, cfile, 'memory', mem_count, batch_size, prefix)
-    batch_add_nodes(client, apps_client, cfile, 'ebs', ebs_count, batch_size, prefix)
+    batch_add_nodes(client, apps_client, cfile, ['memory', 'ebs'], [mem_count, ebs_count], BATCH_SIZE, prefix)
 
     print('Creating routing service...')
     service_spec = util.load_yaml('yaml/services/routing.yml', prefix)
@@ -101,11 +100,11 @@ def create_cluster(mem_count, ebs_count, func_count, sched_count, route_count,
                                      body=service_spec)
 
     print('Adding %d scheduler nodes...' % (sched_count))
-    batch_add_nodes(client, apps_client, cfile, 'scheduler', sched_count, batch_size, prefix)
+    batch_add_nodes(client, apps_client, cfile, ['scheduler'], [sched_count], BATCH_SIZE, prefix)
     util.get_pod_ips(client, 'role=scheduler')
 
     print('Adding %d function serving nodes...' % (func_count))
-    batch_add_nodes(client, apps_client, cfile, 'function', func_count, batch_size, prefix)
+    batch_add_nodes(client, apps_client, cfile, ['function'], [func_count], BATCH_SIZE, prefix)
 
     print('Creating function service...')
     service_spec = util.load_yaml('yaml/services/function.yml', prefix)
@@ -113,7 +112,7 @@ def create_cluster(mem_count, ebs_count, func_count, sched_count, route_count,
                                      body=service_spec)
 
     print('Adding %d benchmark nodes...' % (bench_count))
-    batch_add_nodes(client, apps_client, cfile, 'benchmark', bench_count, batch_size, prefix)
+    batch_add_nodes(client, apps_client, cfile, ['benchmark'], [bench_count], BATCH_SIZE, prefix)
 
     print('Finished creating all pods...')
     os.system('touch setup_complete')
