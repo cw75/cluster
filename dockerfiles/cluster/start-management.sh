@@ -26,7 +26,10 @@ mkdir -p ~/.ssh
 cd $HYDRO_HOME/anna
 git remote remove origin
 git remote add origin https://github.com/$ANNA_REPO_ORG/anna
-git fetch -p origin
+while ! (git fetch -p origin)
+do
+  echo "git fetch failed, retrying"
+done
 git checkout -b brnch origin/$ANNA_REPO_BRANCH
 git submodule sync
 git submodule update
