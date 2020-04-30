@@ -23,6 +23,16 @@ echo "[default]\nregion = us-east-1" > ~/.aws/config
 echo "[default]\naws_access_key_id = $AWS_ACCESS_KEY_ID\naws_secret_access_key = $AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
 mkdir -p ~/.ssh
 
+cd $HYDRO_HOME/anna
+git remote remove origin
+git remote add origin https://github.com/$ANNA_REPO_ORG/anna
+git fetch -p origin
+git checkout -b brnch origin/$ANNA_REPO_BRANCH
+git submodule sync
+git submodule update
+
+cd client/python && python3.6 setup.py install --prefix=$HOME/.local
+
 cd $HYDRO_HOME/cluster
 
 # Move to the desired branch on the desired fork. If none is specified, we
@@ -37,11 +47,10 @@ fi
 
 git remote remove origin
 git remote add origin https://github.com/$REPO_ORG/cluster
-while ! (git fetch -p origin)
-do
-  echo "git fetch failed, retrying"
-done
+git fetch -p origin
 git checkout -b brnch origin/$REPO_BRANCH
+git submodule sync
+git submodule update
 
 # Generate compiled Python protobuf libraries from other Hydro project
 # repositories. This is really a hack, but it shouldn't matter too much because
