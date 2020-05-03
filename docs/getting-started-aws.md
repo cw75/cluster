@@ -5,6 +5,8 @@ To run Hydro in cluster mode (i.e., on multiple nodes and with autoscaling enabl
 ### Prerequisites
 
 We assume you are running inside an EC2 linux VM on AWS, where you have Python3 installed (preferably Python3.6 or later -- we have not tested with earlier versions).
+AWS has default quotas on resources that can be allocated for accounts. The cluster to create in this doc will exceed the default vCPU limit(32) for a regular AWS account. Please make sure this limit is lifted before proceeding. 
+[read more](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html). 
 
 ### Step 0: Installing the Hydro project repositories on your VM
 
@@ -30,6 +32,7 @@ cd cluster
 * Install the `kubectl` binary using the Kubernetes documentation, found [here](https://kubernetes.io/docs/tasks/tools/install-kubectl). Don't worry about setting up your kubectl configuration yet.
 * Install the `kops` binary -- documentation found [here](https://github.com/kubernetes/kops/blob/master/docs/install.md)
 * Install a variety of Python dependencies: `pip3 install awscli boto3 kubernetes`<sup>1</sup>
+* Create service linked role for elastic load balancer: `aws iam create-service-linked-role --aws-service-name "elasticloadbalancing.amazonaws.com"`.
 
 ### Step 2: Configuring `kops`
 
