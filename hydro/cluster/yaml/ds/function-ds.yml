@@ -38,7 +38,7 @@ spec:
       hostIPC: true
       containers:
       - name: function-1
-        image: hydroproject/cloudburst
+        image: cgwu/mplambda
         imagePullPolicy: Always
         env:
         - name: ROUTE_ADDR
@@ -52,18 +52,22 @@ spec:
         - name: ROLE
           value: executor
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: TopK
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: TopK
+        - name: MOTION_REPO_ORG
+          value: cw75
+        - name: MOTION_REPO_BRANCH
+          value: TopK
         volumeMounts:
         - mountPath: /requests
           name: ipc
       - name: function-2
-        image: hydroproject/cloudburst
+        image: cgwu/mplambda
         imagePullPolicy: Always
         env:
         - name: ROUTE_ADDR
@@ -77,18 +81,22 @@ spec:
         - name: ROLE
           value: executor
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: TopK
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: TopK
+        - name: MOTION_REPO_ORG
+          value: cw75
+        - name: MOTION_REPO_BRANCH
+          value: TopK
         volumeMounts:
         - mountPath: /requests
           name: ipc
       - name: function-3
-        image: hydroproject/cloudburst
+        image: cgwu/mplambda
         imagePullPolicy: Always
         env:
         - name: ROUTE_ADDR
@@ -102,13 +110,17 @@ spec:
         - name: ROLE
           value: executor
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: TopK
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: TopK
+        - name: MOTION_REPO_ORG
+          value: cw75
+        - name: MOTION_REPO_BRANCH
+          value: TopK
         volumeMounts:
         - mountPath: /requests
           name: ipc

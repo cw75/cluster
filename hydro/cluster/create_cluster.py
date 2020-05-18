@@ -22,7 +22,7 @@ import boto3
 from hydro.cluster.add_nodes import batch_add_nodes
 from hydro.shared import util
 
-BATCH_SIZE = 100
+BATCH_SIZE = 400
 
 ec2_client = boto3.client('ec2', os.getenv('AWS_REGION', 'us-east-1'))
 

@@ -33,12 +33,12 @@ spec:
     - name: HYDRO_CLUSTER_NAME
       value: CLUSTER_NAME
     - name: REPO_ORG
-      value: hydro-project
+      value: cw75
     - name: REPO_BRANCH
-      value: master
+      value: TopK
     - name: ANNA_REPO_ORG
-      value: hydro-project
+      value: cw75
     - name: ANNA_REPO_BRANCH
-      value: master
+      value: TopK
   nodeSelector:
     role: general

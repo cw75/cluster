@@ -32,13 +32,13 @@ spec:
       hostNetwork: true
       containers:
       - name: routing-container
-        image: hydroproject/anna
+        image: cgwu/anna
         env: 
         - name: SERVER_TYPE
           value: r
         - name: MON_IPS
           value: MON_IPS_DUMMY
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: TopK
