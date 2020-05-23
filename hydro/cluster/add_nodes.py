@@ -33,7 +33,7 @@ def get_current_pod_container_pairs(pods):
             pod_container_pairs.add((pname, cname))
     return pod_container_pairs
 
-def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
+def add_nodes(client, apps_client, kinds, counts, aws_key_id, aws_key, create=False,
               prefix=None):
     previously_created_pods_list = []
     expected_counts = []
@@ -54,21 +54,6 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
 
     util.run_process(['./validate_cluster.sh'])
 
-    management_ip = util.get_pod_ips(client, 'role=management')[0]
-    route_ips = util.get_pod_ips(client, 'role=routing')
-
-    if len(route_ips) > 0:
-        seed_ip = random.choice(route_ips)
-    else:
-        seed_ip = ''
-
-    mon_str = ' '.join(util.get_pod_ips(client, 'role=monitoring'))
-    route_str = ' '.join(route_ips)
-    sched_str = ' '.join(util.get_pod_ips(client, 'role=scheduler'))
-
-    route_addr = util.get_service_address(client, 'routing-service')
-    function_addr = util.get_service_address(client, 'function-service')
-
     for i in range(len(kinds)):
         kind = kinds[i]
 
@@ -83,13 +68,8 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
             for container in yml['spec']['template']['spec']['containers']:
                 env = container['env']
 
-                util.replace_yaml_val(env, 'ROUTING_IPS', route_str)
-                util.replace_yaml_val(env, 'ROUTE_ADDR', route_addr)
-                util.replace_yaml_val(env, 'SCHED_IPS', sched_str)
-                util.replace_yaml_val(env, 'FUNCTION_ADDR', function_addr)
-                util.replace_yaml_val(env, 'MON_IPS', mon_str)
-                util.replace_yaml_val(env, 'MGMT_IP', management_ip)
-                util.replace_yaml_val(env, 'SEED_IP', seed_ip)
+                util.replace_yaml_val(env, 'AWS_ACCESS_KEY_ID', aws_key_id)
+                util.replace_yaml_val(env, 'AWS_SECRET_ACCESS_KEY', aws_key)
 
             apps_client.create_namespaced_daemon_set(namespace=util.NAMESPACE,
                                                      body=yml)
@@ -99,6 +79,14 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
         while len(res) != expected_counts[i]:
             res = util.get_pod_ips(client, 'role='+kind, is_running=True)
 
+        server_str = ' '.join(util.get_pod_ips(client, 'role=server'))
+        client_str = ' '.join(util.get_pod_ips(client, 'role=client'))
+
+        f = open("server-config.txt", "w")
+        f.write(server_str + '\n')
+        f.write(client_str + '\n')
+        f.close()
+
         pods = client.list_namespaced_pod(namespace=util.NAMESPACE,
                                           label_selector='role=' +
                                           kind).items
@@ -107,46 +95,38 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
 
         new_pods = created_pods.difference(previously_created_pods_list[i])
 
-        # Copy the KVS config into all recently created pods.
-        os.system('cp %s ./anna-config.yml' % cfile)
-
         for pname, cname in new_pods:
-            if kind != 'function':
-                util.copy_file_to_pod(client, 'anna-config.yml', pname,
-                                      '/hydro/anna/conf/', cname)
-            else:
-                if cname == 'cache-container':
-                    # For the cache pods, we also copy the conf into the cache
-                    # conf directory.
-                    util.copy_file_to_pod(client, 'anna-config.yml', pname,
-                                          '/hydro/anna-cache/conf/', cname)
+            if kind == 'client':
+                util.copy_file_to_pod(client, 'server-config.txt', pname,
+                                      '/', cname)
 
-        os.system('rm ./anna-config.yml')
+        os.system('rm server-config.txt')
 
-def batch_add_nodes(client, apps_client, cfile, node_types, node_counts, batch_size, prefix):
+
+def batch_add_nodes(client, apps_client, node_types, node_counts, batch_size, prefix, aws_key_id, aws_key):
   if sum(node_counts) <= batch_size:
-    add_nodes(client, apps_client, cfile, node_types, node_counts, True,
+    add_nodes(client, apps_client, node_types, node_counts, aws_key_id, aws_key, True,
               prefix)
   else:
     for i in range(len(node_types)):
         if node_counts[i] <= batch_size:
-            batch_add_nodes(client, apps_client, cfile, [node_types[i]], [node_counts[i]], batch_size, prefix)
+            batch_add_nodes(client, apps_client, [node_types[i]], [node_counts[i]], batch_size, prefix, aws_key_id, aws_key)
         else:
             batch_count = 1
             print('Batch %d: adding %d nodes...' % (batch_count, batch_size))
-            add_nodes(client, apps_client, cfile, [node_types[i]], [batch_size], True,
+            add_nodes(client, apps_client, [node_types[i]], [batch_size], aws_key_id, aws_key, True,
                       prefix)
             remaining_count = node_counts[i] - batch_size
             batch_count += 1
             while remaining_count > 0:
               if remaining_count <= batch_size:
                 print('Batch %d: adding %d nodes...' % (batch_count, remaining_count))
-                add_nodes(client, apps_client, cfile, [node_types[i]], [remaining_count], False,
+                add_nodes(client, apps_client, [node_types[i]], [remaining_count], aws_key_id, aws_key, False,
                           prefix)
                 remaining_count = 0
               else:
                 print('Batch %d: adding %d nodes...' % (batch_count, batch_size))
-                add_nodes(client, apps_client, cfile, [node_types[i]], [batch_size], False,
+                add_nodes(client, apps_client, [node_types[i]], [batch_size], aws_key_id, aws_key, False,
                           prefix)
                 remaining_count = remaining_count - batch_size
               batch_count += 1
