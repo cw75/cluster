@@ -29,11 +29,15 @@ spec:
     spec:
       nodeSelector:
         role: scheduler
+      volumes:
+      - name: ipc
+        hostPath:
+          path: /tmp
       hostNetwork: true
       hostIPC: true
       containers:
       - name: scheduler-container
-        image: hydroproject/cloudburst
+        image: cgwu/cloudburst:slack
         imagePullPolicy: Always
         env:
         - name: ROUTE_ADDR
@@ -43,10 +47,13 @@ spec:
         - name: ROLE
           value: scheduler
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: slack
         - name: ANNA_REPO_ORG
           value: hydro-project
         - name: ANNA_REPO_BRANCH
           value: master
+        volumeMounts:
+        - mountPath: /slack
+          name: ipc
