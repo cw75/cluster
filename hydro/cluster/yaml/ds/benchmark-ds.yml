@@ -31,7 +31,8 @@ spec:
         role: benchmark
       containers:
       - name: benchmark-1
-        image: hydroproject/cloudburst
+        image: cgwu/cloudburst:graph
+        imagePullPolicy: Always
         env: 
         - name: ROLE
           value: benchmark
@@ -41,16 +42,19 @@ spec:
           value: "0"
         - name: MGMT_IP
           value: ""
+        - name: SCHED_IPS
+          value: SCHED_IPS_DUMMY
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: causal_exp
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: causal_exp
       - name: benchmark-2
-        image: hydroproject/cloudburst
+        image: cgwu/cloudburst:graph
+        imagePullPolicy: Always
         env: 
         - name: ROLE
           value: benchmark
@@ -60,16 +64,19 @@ spec:
           value: "1"
         - name: MGMT_IP
           value: ""
+        - name: SCHED_IPS
+          value: SCHED_IPS_DUMMY
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: causal_exp
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: causal_exp
       - name: benchmark-3
-        image: hydroproject/cloudburst
+        image: cgwu/cloudburst:graph
+        imagePullPolicy: Always
         env: 
         - name: ROLE
           value: benchmark
@@ -79,16 +86,19 @@ spec:
           value: "2"
         - name: MGMT_IP
           value: ""
+        - name: SCHED_IPS
+          value: SCHED_IPS_DUMMY
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: causal_exp
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: causal_exp
       - name: benchmark-4
-        image: hydroproject/cloudburst
+        image: cgwu/cloudburst:graph
+        imagePullPolicy: Always
         env: 
         - name: ROLE
           value: benchmark
@@ -98,11 +108,13 @@ spec:
           value: "3"
         - name: MGMT_IP
           value: ""
+        - name: SCHED_IPS
+          value: SCHED_IPS_DUMMY
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: causal_exp
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: causal_exp
