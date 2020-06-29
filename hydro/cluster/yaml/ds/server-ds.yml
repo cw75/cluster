@@ -32,16 +32,42 @@ spec:
       hostNetwork: true
       hostIPC: true
       containers:
-      - name: server-container
-        image: cgwu/server
+      - name: benchmark-1
+        image: cgwu/twitter-redis
         imagePullPolicy: Always
         env:
-        - name: ROLE
-          value: server
-        - name: REPO_ORG
-          value: cw75
-        - name: REPO_BRANCH
-          value: nmt
+        - name: THREAD_ID
+          value: "0"
+        - name: AWS_ACCESS_KEY_ID
+          value: ACCESS_KEY_ID_DUMMY
+        - name: AWS_SECRET_ACCESS_KEY
+          value: SECRET_KEY_DUMMY
+      - name: benchmark-2
+        image: cgwu/twitter-redis
+        imagePullPolicy: Always
+        env:
+        - name: THREAD_ID
+          value: "1"
+        - name: AWS_ACCESS_KEY_ID
+          value: ACCESS_KEY_ID_DUMMY
+        - name: AWS_SECRET_ACCESS_KEY
+          value: SECRET_KEY_DUMMY
+      - name: benchmark-3
+        image: cgwu/twitter-redis
+        imagePullPolicy: Always
+        env:
+        - name: THREAD_ID
+          value: "2"
+        - name: AWS_ACCESS_KEY_ID
+          value: ACCESS_KEY_ID_DUMMY
+        - name: AWS_SECRET_ACCESS_KEY
+          value: SECRET_KEY_DUMMY
+      - name: benchmark-4
+        image: cgwu/twitter-redis
+        imagePullPolicy: Always
+        env:
+        - name: THREAD_ID
+          value: "3"
         - name: AWS_ACCESS_KEY_ID
           value: ACCESS_KEY_ID_DUMMY
         - name: AWS_SECRET_ACCESS_KEY

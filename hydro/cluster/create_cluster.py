@@ -26,7 +26,7 @@ BATCH_SIZE = 400
 
 ec2_client = boto3.client('ec2', os.getenv('AWS_REGION', 'us-east-1'))
 
-def create_cluster(server_count, client_count, ssh_key, cluster_name, kops_bucket,
+def create_cluster(server_count, ssh_key, cluster_name, kops_bucket,
                    aws_key_id, aws_key):
 
     if 'HYDRO_HOME' not in os.environ:
@@ -42,33 +42,7 @@ def create_cluster(server_count, client_count, ssh_key, cluster_name, kops_bucke
     print('Creating %d server nodes...' % (server_count))
     batch_add_nodes(client, apps_client, ['server'], [server_count], BATCH_SIZE, prefix, aws_key_id, aws_key)
 
-    print('Creating %d client nodes...' % (client_count))
-    batch_add_nodes(client, apps_client, ['client'], [client_count], BATCH_SIZE, prefix, aws_key_id, aws_key)
-
     print('Finished creating all pods...')
-    '''os.system('touch setup_complete')
-    util.copy_file_to_pod(client, 'setup_complete', management_podname, '/hydro',
-                          kcname)
-    os.system('rm setup_complete')
-
-    sg_name = 'nodes.' + cluster_name
-    sg = ec2_client.describe_security_groups(
-          Filters=[{'Name': 'group-name',
-                    'Values': [sg_name]}])['SecurityGroups'][0]
-
-    print('Authorizing ports for routing service...')
-
-    permission = [{
-        'FromPort': 6200,
-        'IpProtocol': 'tcp',
-        'ToPort': 6203,
-        'IpRanges': [{
-            'CidrIp': '0.0.0.0/0'
-        }]
-    }]
-
-    ec2_client.authorize_security_group_ingress(GroupId=sg['GroupId'],
-                                                IpPermissions=permission)'''
 
 
 if __name__ == '__main__':
@@ -86,9 +60,6 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--server', nargs=1, type=int, metavar='S',
                         help='The number of server nodes ' +
                         '(required)', dest='server', required=True)
-    parser.add_argument('-c', '--client', nargs=1, type=int, metavar='C',
-                        help='The number of client nodes ' +
-                        '(required)', dest='client', required=True)
     parser.add_argument('--ssh-key', nargs='?', type=str,
                         help='The SSH key used to configure and connect to ' +
                         'each node (optional)', dest='sshkey',
@@ -102,4 +73,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    create_cluster(args.server[0], args.client[0], args.sshkey, cluster_name, kops_bucket, aws_key_id, aws_key)
+    create_cluster(args.server[0], args.sshkey, cluster_name, kops_bucket, aws_key_id, aws_key)
