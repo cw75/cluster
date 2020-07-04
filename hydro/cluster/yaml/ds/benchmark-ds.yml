@@ -47,11 +47,11 @@ spec:
         - name: REPO_ORG
           value: cw75
         - name: REPO_BRANCH
-          value: causal_exp
+          value: twitter_lww
         - name: ANNA_REPO_ORG
-          value: cw75
+          value: hydro-project
         - name: ANNA_REPO_BRANCH
-          value: causal_exp
+          value: master
       - name: benchmark-2
         image: cgwu/cloudburst:graph
         imagePullPolicy: Always
@@ -69,11 +69,11 @@ spec:
         - name: REPO_ORG
           value: cw75
         - name: REPO_BRANCH
-          value: causal_exp
+          value: twitter_lww
         - name: ANNA_REPO_ORG
-          value: cw75
+          value: hydro-project
         - name: ANNA_REPO_BRANCH
-          value: causal_exp
+          value: master
       - name: benchmark-3
         image: cgwu/cloudburst:graph
         imagePullPolicy: Always
@@ -91,11 +91,11 @@ spec:
         - name: REPO_ORG
           value: cw75
         - name: REPO_BRANCH
-          value: causal_exp
+          value: twitter_lww
         - name: ANNA_REPO_ORG
-          value: cw75
+          value: hydro-project
         - name: ANNA_REPO_BRANCH
-          value: causal_exp
+          value: master
       - name: benchmark-4
         image: cgwu/cloudburst:graph
         imagePullPolicy: Always
@@ -113,8 +113,8 @@ spec:
         - name: REPO_ORG
           value: cw75
         - name: REPO_BRANCH
-          value: causal_exp
+          value: twitter_lww
         - name: ANNA_REPO_ORG
-          value: cw75
+          value: hydro-project
         - name: ANNA_REPO_BRANCH
-          value: causal_exp
+          value: master
