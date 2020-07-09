@@ -38,7 +38,7 @@ spec:
       hostIPC: true
       containers:
       - name: function-1
-        image: cgwu/cloudburst:slack
+        image: cgwu/cloudburst:chatbot
         imagePullPolicy: Always
         env:
         - name: ROUTE_ADDR
@@ -56,14 +56,14 @@ spec:
         - name: REPO_BRANCH
           value: slack
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: slack
         volumeMounts:
         - mountPath: /requests
           name: ipc
       - name: function-2
-        image: cgwu/cloudburst:slack
+        image: cgwu/cloudburst:chatbot
         imagePullPolicy: Always
         env:
         - name: ROUTE_ADDR
@@ -81,14 +81,14 @@ spec:
         - name: REPO_BRANCH
           value: slack
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: slack
         volumeMounts:
         - mountPath: /requests
           name: ipc
       - name: function-3
-        image: cgwu/cloudburst:slack
+        image: cgwu/cloudburst:chatbot
         imagePullPolicy: Always
         env:
         - name: ROUTE_ADDR
@@ -106,9 +106,9 @@ spec:
         - name: REPO_BRANCH
           value: slack
         - name: ANNA_REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: ANNA_REPO_BRANCH
-          value: master
+          value: slack
         volumeMounts:
         - mountPath: /requests
           name: ipc
