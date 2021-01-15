@@ -90,6 +90,8 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
                 util.replace_yaml_val(env, 'MON_IPS', mon_str)
                 util.replace_yaml_val(env, 'MGMT_IP', management_ip)
                 util.replace_yaml_val(env, 'SEED_IP', seed_ip)
+                util.replace_yaml_val(env, 'AWS_ACCESS_KEY_ID', util.check_or_get_env_arg('AWS_ACCESS_KEY_ID'))
+                util.replace_yaml_val(env, 'AWS_SECRET_ACCESS_KEY', util.check_or_get_env_arg('AWS_SECRET_ACCESS_KEY'))
 
             apps_client.create_namespaced_daemon_set(namespace=util.NAMESPACE,
                                                      body=yml)

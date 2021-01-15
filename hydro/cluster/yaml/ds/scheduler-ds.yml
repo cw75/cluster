@@ -33,7 +33,7 @@ spec:
       hostIPC: true
       containers:
       - name: scheduler-container
-        image: hydroproject/cloudburst
+        image: cgwu/cloudburst:ml
         imagePullPolicy: Always
         env:
         - name: ROUTE_ADDR

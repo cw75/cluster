@@ -42,9 +42,13 @@ spec:
           limits:
             cpu: "2"
             memory: "2G"
-        image: hydroproject/cloudburst
+        image: cgwu/cloudburst:ml
         imagePullPolicy: Always
         env:
+        - name: AWS_ACCESS_KEY_ID
+          value: ACCESS_KEY_ID_DUMMY
+        - name: AWS_SECRET_ACCESS_KEY
+          value: SECRET_KEY_DUMMY
         - name: ROUTE_ADDR
           value: ROUTE_ADDR_DUMMY
         - name: MGMT_IP
@@ -56,9 +60,9 @@ spec:
         - name: ROLE
           value: executor
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: class_registration_debugging
         - name: ANNA_REPO_ORG
           value: hydro-project
         - name: ANNA_REPO_BRANCH
@@ -71,9 +75,13 @@ spec:
           limits:
             cpu: "2"
             memory: "2G"
-        image: hydroproject/cloudburst
+        image: cgwu/cloudburst:ml
         imagePullPolicy: Always
         env:
+        - name: AWS_ACCESS_KEY_ID
+          value: ACCESS_KEY_ID_DUMMY
+        - name: AWS_SECRET_ACCESS_KEY
+          value: SECRET_KEY_DUMMY
         - name: ROUTE_ADDR
           value: ROUTE_ADDR_DUMMY
         - name: MGMT_IP
@@ -85,9 +93,9 @@ spec:
         - name: ROLE
           value: executor
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: class_registration_debugging
         - name: ANNA_REPO_ORG
           value: hydro-project
         - name: ANNA_REPO_BRANCH
@@ -96,13 +104,17 @@ spec:
         - mountPath: /requests
           name: ipc
       - name: function-3
-        image: hydroproject/cloudburst
+        image: cgwu/cloudburst:ml
         imagePullPolicy: Always
         resources:
           limits:
             cpu: "2"
             memory: "2G"
         env:
+        - name: AWS_ACCESS_KEY_ID
+          value: ACCESS_KEY_ID_DUMMY
+        - name: AWS_SECRET_ACCESS_KEY
+          value: SECRET_KEY_DUMMY
         - name: ROUTE_ADDR
           value: ROUTE_ADDR_DUMMY
         - name: MGMT_IP
@@ -114,9 +126,9 @@ spec:
         - name: ROLE
           value: executor
         - name: REPO_ORG
-          value: hydro-project
+          value: cw75
         - name: REPO_BRANCH
-          value: master
+          value: class_registration_debugging
         - name: ANNA_REPO_ORG
           value: hydro-project
         - name: ANNA_REPO_BRANCH
